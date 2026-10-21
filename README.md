@@ -7,6 +7,7 @@ Desired state for the Kubernetes cluster that runs [Scalable-Data-Ingestion](htt
 | Path | Contents |
 |---|---|
 | `infra/vms/` | Scripts and cloud-init that create the cluster VMs |
+| `infra/ansible/` | Inventory and playbooks that configure the nodes |
 
 `infra/` is run from an operator machine. ArgoCD never syncs it.
 
@@ -56,6 +57,12 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
      User ops
      IdentityFile ~/.ssh/homelab_ed25519
      IdentitiesOnly yes
+   ```
+
+5. Check that Ansible reaches every node. Run Ansible from `infra/ansible/`, where it picks up `ansible.cfg` and the inventory:
+   ```bash
+   cd infra/ansible
+   ansible all -m ping --become
    ```
 
 `infra/vms/destroy-vms.sh` deletes the VMs and all their data.
