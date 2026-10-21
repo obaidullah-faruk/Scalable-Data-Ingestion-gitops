@@ -12,3 +12,6 @@ users:
       - ${SSH_PUBLIC_KEY}
 
 ssh_pwauth: false
+
+# Multipass vendor-data rewrites /etc/hosts on every boot. Ansible owns it instead.
+manage_etc_hosts: false

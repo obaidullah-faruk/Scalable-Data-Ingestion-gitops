@@ -2,3 +2,6 @@
 ansible_python_interpreter: /usr/bin/python3
 
 kubernetes_version: "1.36.5"
+
+# Name of the Kubernetes API endpoint. Points at the first control plane node.
+api_server_name: k8s-api.lab
