@@ -43,8 +43,27 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
    ```
    Set `SSH_PUBLIC_KEY_FILE` to use a different key. Existing VMs are skipped, so the script is safe to rerun.
 
+3. Add the nodes to `/etc/hosts`, using the IPs from `multipass list`:
+   ```
+   <cp-1 IP>      cp-1 k8s-api.lab
+   <worker-1 IP>  worker-1
+   <worker-2 IP>  worker-2
+   ```
+
+4. Add the nodes to your SSH config, for example in `~/.ssh/config.d/homelab` with `Include ~/.ssh/config.d/*` as the first line of `~/.ssh/config`:
+   ```
+   Host cp-1 worker-1 worker-2
+     User ops
+     IdentityFile ~/.ssh/homelab_ed25519
+     IdentitiesOnly yes
+   ```
+
 `infra/vms/destroy-vms.sh` deletes the VMs and all their data.
 
 ## Access
+
+```bash
+ssh cp-1
+```
 
 Nodes accept SSH as `ops` with the lab key only. Password login is disabled. `ops` has passwordless sudo.
