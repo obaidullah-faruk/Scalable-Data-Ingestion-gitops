@@ -1,0 +1,14 @@
+#cloud-config
+# Identity and SSH access only. Node configuration is done by Ansible.
+
+users:
+  # Keeps the ubuntu user that `multipass shell` and `multipass exec` rely on.
+  - default
+  - name: ops
+    shell: /bin/bash
+    # No password is set, so Ansible needs passwordless sudo to become root.
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${SSH_PUBLIC_KEY}
+
+ssh_pwauth: false
