@@ -6,13 +6,13 @@ Desired state for the Kubernetes cluster that runs [Scalable-Data-Ingestion](htt
 
 | Path | Contents |
 |---|---|
-| `infra/vms/` | cloud-init for the cluster VMs |
+| `infra/vms/` | Scripts and cloud-init that create the cluster VMs |
 
 `infra/` is run from an operator machine. ArgoCD never syncs it.
 
 ## Nodes
 
-Ubuntu arm64 VMs on Multipass.
+Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
 
 | Node | Role |
 |---|---|
@@ -36,6 +36,14 @@ Ubuntu arm64 VMs on Multipass.
    ssh-keygen -t ed25519 -C homelab-k8s -f ~/.ssh/homelab_ed25519
    ```
    Its public key is added to each node at creation.
+
+2. Create the VMs:
+   ```bash
+   infra/vms/create-vms.sh
+   ```
+   Set `SSH_PUBLIC_KEY_FILE` to use a different key. Existing VMs are skipped, so the script is safe to rerun.
+
+`infra/vms/destroy-vms.sh` deletes the VMs and all their data.
 
 ## Access
 
