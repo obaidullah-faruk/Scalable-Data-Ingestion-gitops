@@ -1,0 +1,6 @@
+# Pending kubelet-serving requests made by this node's kubelet.
+kubelet_serving_cert_pending: >-
+  {{ (kubelet_serving_cert_csrs.stdout | from_json)['items']
+     | selectattr('spec.username', 'eq', 'system:node:' ~ inventory_hostname)
+     | rejectattr('status.conditions', 'defined')
+     | map(attribute='metadata.name') | list }}

@@ -20,3 +20,9 @@
   become: true
   roles:
     - kubeadm_join
+
+- name: Approve kubelet serving certificates
+  hosts: all
+  become: true
+  roles:
+    - kubelet_serving_cert

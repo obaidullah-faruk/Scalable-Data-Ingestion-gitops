@@ -12,3 +12,17 @@
   ansible.builtin.command: kubeadm init --config /etc/kubernetes/kubeadm-config.yaml
   args:
     creates: /etc/kubernetes/admin.conf
+
+# Full admin access. Never in Git; phase 7 replaces it with personal certificates.
+- name: Copy the admin kubeconfig to the Mac
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kubeadm_init_mac_kubeconfig }}"
+    flat: true
+
+- name: Restrict the admin kubeconfig on the Mac
+  ansible.builtin.file:
+    path: "{{ kubeadm_init_mac_kubeconfig }}"
+    mode: "0600"
+  delegate_to: localhost
+  become: false

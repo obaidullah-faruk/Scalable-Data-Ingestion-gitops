@@ -1,0 +1,32 @@
+# With serverTLSBootstrap, kubelet asks the cluster CA for its serving certificate,
+# and nothing approves it automatically. Only requests from inventory nodes are approved.
+- name: Check for a kubelet serving certificate
+  ansible.builtin.stat:
+    path: /var/lib/kubelet/pki/kubelet-server-current.pem
+  register: kubelet_serving_cert_file
+
+- name: Approve the kubelet serving certificate
+  when: not kubelet_serving_cert_file.stat.exists
+  block:
+    - name: Wait for the certificate request
+      ansible.builtin.command: >-
+        kubectl get csr --field-selector spec.signerName=kubernetes.io/kubelet-serving
+        --output json --kubeconfig /etc/kubernetes/admin.conf
+      delegate_to: "{{ groups['control_plane'][0] }}"
+      register: kubelet_serving_cert_csrs
+      changed_when: false
+      until: kubelet_serving_cert_pending | length > 0
+      retries: 30
+      delay: 5
+
+    - name: Approve the certificate request
+      ansible.builtin.command: >-
+        kubectl certificate approve {{ kubelet_serving_cert_pending | join(' ') }}
+        --kubeconfig /etc/kubernetes/admin.conf
+      delegate_to: "{{ groups['control_plane'][0] }}"
+      changed_when: true
+
+    - name: Wait for kubelet to pick up the certificate
+      ansible.builtin.wait_for:
+        path: /var/lib/kubelet/pki/kubelet-server-current.pem
+        timeout: 60

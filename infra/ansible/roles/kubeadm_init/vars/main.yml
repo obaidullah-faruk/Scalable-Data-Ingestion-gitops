@@ -1,0 +1,2 @@
+# Kept apart from ~/.kube/config so other clusters' contexts stay untouched.
+kubeadm_init_mac_kubeconfig: "{{ lookup('env', 'HOME') }}/.kube/homelab-admin.conf"
