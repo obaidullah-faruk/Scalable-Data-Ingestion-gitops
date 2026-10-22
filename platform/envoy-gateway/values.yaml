@@ -1,0 +1,25 @@
+# Values for the gateway-helm chart. The chart version is pinned in application.yaml.
+
+# Installed by the envoy-gateway-crds Application, on the Gateway API standard channel.
+crds:
+  enabled: false
+
+deployment:
+  envoyGateway:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+certgen:
+  job:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi

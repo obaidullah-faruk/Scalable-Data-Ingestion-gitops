@@ -5,3 +5,4 @@ resources:
   - metrics-server/application.yaml
   - metallb/application.yaml
   - envoy-gateway-crds/application.yaml
+  - envoy-gateway/application.yaml

@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: envoy-gateway
+  namespace: argocd
+  # Deleting the Application also deletes what it installed.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  sources:
+    - repoURL: docker.io/envoyproxy
+      chart: gateway-helm
+      targetRevision: v1.9.2
+      helm:
+        valueFiles:
+          - $values/platform/envoy-gateway/values.yaml
+    # Values for the chart, and the GatewayClass and Gateway in config/.
+    - repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+      targetRevision: main
+      ref: values
+      path: platform/envoy-gateway/config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    # The CRDs come from the envoy-gateway-crds Application, which may sync after this one.
+    retry:
+      limit: 5
