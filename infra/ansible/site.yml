@@ -26,3 +26,10 @@
   become: true
   roles:
     - kubelet_serving_cert
+
+# After the join: the control plane and worker-1 are tainted, so ArgoCD runs on worker-2.
+- name: Bootstrap ArgoCD
+  hosts: control_plane
+  become: true
+  roles:
+    - argocd

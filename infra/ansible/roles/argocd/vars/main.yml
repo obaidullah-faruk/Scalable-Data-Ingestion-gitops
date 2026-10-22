@@ -1,0 +1,2 @@
+argocd_chart_repo: https://argoproj.github.io/argo-helm
+argocd_values_file: "{{ playbook_dir }}/../../platform/argocd/values.yaml"

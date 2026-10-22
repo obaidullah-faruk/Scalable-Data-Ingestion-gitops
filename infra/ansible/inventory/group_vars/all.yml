@@ -8,6 +8,9 @@ calico_version: v3.33.0
 
 helm_version: "4.3.0"
 
+# Argo CD v3.5.5, tested on Kubernetes 1.33 to 1.36.
+argocd_chart_version: "10.10.5"
+
 # Pause image that kubeadm expects for kubernetes_version: kubeadm config images list
 pause_image: registry.k8s.io/pause:3.10.2
 

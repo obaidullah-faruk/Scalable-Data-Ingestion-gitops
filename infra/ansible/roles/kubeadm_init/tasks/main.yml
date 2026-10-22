@@ -13,7 +13,7 @@
   args:
     creates: /etc/kubernetes/admin.conf
 
-# Full admin access. Never in Git; phase 7 replaces it with personal certificates.
+# Full admin access. Never in Git; daily access uses personal certificates.
 - name: Copy the admin kubeconfig to the Mac
   ansible.builtin.fetch:
     src: /etc/kubernetes/admin.conf

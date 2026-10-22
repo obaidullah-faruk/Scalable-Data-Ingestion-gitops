@@ -1,0 +1,13 @@
+# Installed once here because ArgoCD can't install itself. Every other add-on goes through ArgoCD.
+- name: Install ArgoCD
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo-cd
+    chart_repo_url: "{{ argocd_chart_repo }}"
+    chart_version: "{{ argocd_chart_version }}"
+    release_namespace: argocd
+    create_namespace: true
+    kubeconfig: /etc/kubernetes/admin.conf
+    # The lookup reads the file on the operator machine, so cp-1 needs no copy of the repo.
+    release_values: "{{ lookup('ansible.builtin.file', argocd_values_file) | from_yaml }}"
+    wait: true
