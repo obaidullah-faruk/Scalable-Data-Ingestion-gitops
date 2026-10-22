@@ -9,10 +9,10 @@ metadata:
 spec:
   project: platform
   sources:
-    # The chart isn't published to a Helm repository, so it is read from the release tag.
-    - repoURL: https://github.com/rancher/local-path-provisioner.git
-      targetRevision: v0.0.37
-      path: deploy/chart/local-path-provisioner
+    # OCI chart. Argo CD expects the registry path without the oci:// prefix.
+    - repoURL: ghcr.io/rancher/local-path-provisioner/charts
+      chart: local-path-provisioner
+      targetRevision: 0.0.37
       helm:
         valueFiles:
           - $values/platform/local-path-provisioner/values.yaml
