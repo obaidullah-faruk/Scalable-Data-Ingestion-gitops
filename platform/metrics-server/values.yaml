@@ -1,0 +1,11 @@
+# Values for the metrics-server chart. The chart version is pinned in application.yaml.
+# The default args verify each kubelet's serving certificate, which the cluster CA signs
+# (infra/ansible/roles/kubelet_serving_cert), so --kubelet-insecure-tls is not needed.
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
