@@ -1,0 +1,25 @@
+# Values for the metallb chart. The chart version is pinned in application.yaml.
+
+# L2 mode only. BGP, and the FRR daemon it needs, are not used.
+frrk8s:
+  enabled: false
+
+controller:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+speaker:
+  tolerations:
+    - operator: Exists
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

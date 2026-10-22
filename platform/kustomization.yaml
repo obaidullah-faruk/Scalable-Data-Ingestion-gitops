@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - local-path-provisioner/application.yaml
   - metrics-server/application.yaml
+  - metallb/application.yaml
