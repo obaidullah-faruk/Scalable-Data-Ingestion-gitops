@@ -4,3 +4,4 @@ resources:
   - local-path-provisioner/application.yaml
   - metrics-server/application.yaml
   - metallb/application.yaml
+  - envoy-gateway-crds/application.yaml

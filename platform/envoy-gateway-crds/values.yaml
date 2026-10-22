@@ -1,0 +1,8 @@
+# Values for the gateway-crds-helm chart. The chart version is pinned in application.yaml.
+
+crds:
+  gatewayAPI:
+    enabled: true
+    channel: standard
+  envoyGateway:
+    enabled: true
