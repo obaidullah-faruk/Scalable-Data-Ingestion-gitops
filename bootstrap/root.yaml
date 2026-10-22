@@ -1,0 +1,16 @@
+# Applied by Ansible. Everything it syncs is listed in kustomization.yaml next to it.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  # The other projects are created by this app, so it can't belong to one of them.
+  project: default
+  source:
+    repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    targetRevision: main
+    path: bootstrap
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd

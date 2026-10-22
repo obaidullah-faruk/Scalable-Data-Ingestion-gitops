@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  description: Cluster add-ons
+  sourceRepos:
+    - https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: "*"
+  # Add-ons install CRDs, ClusterRoles, webhooks and Namespaces.
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"

@@ -76,7 +76,7 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
    - runs `kubeadm init` on cp-1, installs Calico and joins the workers with their labels and taints from `inventory/hosts.yml`
    - approves each kubelet's serving certificate
    - copies the admin kubeconfig to `~/.kube/homelab-admin.conf` on this machine
-   - installs ArgoCD with the values in `platform/argocd/values.yaml`
+   - installs ArgoCD with the values in `platform/argocd/values.yaml` and applies the root Application, `bootstrap/root.yaml`
 
    `kubeadm init` and `join` run only on nodes that aren't part of the cluster yet. Run the playbook on all nodes, without `--limit`: every node's `/etc/hosts` is built from the facts of all nodes. A rerun changes nothing.
 

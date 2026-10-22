@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ingestion
+  namespace: argocd
+spec:
+  description: Scalable-Data-Ingestion app
+  sourceRepos:
+    - https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+  # No clusterResourceWhitelist, so every cluster-scoped kind is denied. Namespaces come from platform.
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: ingestion-dev
+    - server: https://kubernetes.default.svc
+      namespace: ingestion-prod

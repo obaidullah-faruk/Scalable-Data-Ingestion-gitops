@@ -11,3 +11,10 @@
     # The lookup reads the file on the operator machine, so cp-1 needs no copy of the repo.
     release_values: "{{ lookup('ansible.builtin.file', argocd_values_file) | from_yaml }}"
     wait: true
+
+- name: Apply the root Application
+  ansible.builtin.command: kubectl apply --kubeconfig /etc/kubernetes/admin.conf -f -
+  args:
+    stdin: "{{ lookup('ansible.builtin.file', argocd_root_app_file) }}"
+  register: argocd_root_app
+  changed_when: "'unchanged' not in argocd_root_app.stdout"
