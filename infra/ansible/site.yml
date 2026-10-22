@@ -14,3 +14,9 @@
     - kubeadm_init
     - helm
     - calico
+
+- name: Join the workers
+  hosts: workers
+  become: true
+  roles:
+    - kubeadm_join

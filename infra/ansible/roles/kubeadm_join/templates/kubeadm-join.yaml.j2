@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: "{{ api_server_name }}:6443"
+    token: "{{ kubeadm_join_command.stdout | regex_search('[a-z0-9]{6}[.][a-z0-9]{16}') }}"
+    caCertHashes:
+      - "{{ kubeadm_join_command.stdout | regex_search('sha256:[0-9a-f]{64}') }}"
+# Labels and taints are set when kubelet registers the node, so no pod is scheduled before they exist.
+nodeRegistration:
+{% if node_labels is defined %}
+  kubeletExtraArgs:
+    - name: node-labels
+      value: "{{ node_labels.items() | map('join', '=') | join(',') }}"
+{% endif %}
+  taints: {{ node_taints | default([]) | to_json }}
