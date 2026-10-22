@@ -8,3 +8,6 @@ pause_image: registry.k8s.io/pause:3.10.2
 
 # Name of the Kubernetes API endpoint. Points at the first control plane node.
 api_server_name: k8s-api.lab
+
+# Calico's IP pool uses the same range.
+pod_subnet: 10.244.0.0/16

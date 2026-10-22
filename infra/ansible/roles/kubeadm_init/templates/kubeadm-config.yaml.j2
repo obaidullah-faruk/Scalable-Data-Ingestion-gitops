@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: "{{ kubernetes_version }}"
+# A DNS name instead of cp-1's IP, so more control plane nodes or a load balancer can be added later.
+controlPlaneEndpoint: "{{ api_server_name }}:6443"
+networking:
+  podSubnet: "{{ pod_subnet }}"
+# Metrics listen on all interfaces so Prometheus can scrape them. kubeadm binds them to localhost by default.
+etcd:
+  local:
+    extraArgs:
+      - name: listen-metrics-urls
+        value: http://0.0.0.0:2381
+controllerManager:
+  extraArgs:
+    - name: bind-address
+      value: 0.0.0.0
+scheduler:
+  extraArgs:
+    - name: bind-address
+      value: 0.0.0.0
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+# kubelet asks the cluster CA for its serving certificate, so clients can verify it.
+serverTLSBootstrap: true
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+metricsBindAddress: 0.0.0.0:10249

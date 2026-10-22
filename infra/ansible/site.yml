@@ -6,3 +6,9 @@
     - kernel
     - containerd
     - kubernetes_packages
+
+- name: Set up the control plane
+  hosts: control_plane
+  become: true
+  roles:
+    - kubeadm_init
