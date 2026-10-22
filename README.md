@@ -125,7 +125,3 @@ Then switch to the cluster's context:
 ```bash
 kubectl config use-context kubernetes-admin@kubernetes
 ```
-
-kubectl merges the files in memory and saves the current context in the first file, `~/.kube/config`. Don't rename the context: the next playbook run copies `admin.conf` again and undoes it.
-
-`homelab-admin.conf` is full cluster admin. Keep it out of Git.
