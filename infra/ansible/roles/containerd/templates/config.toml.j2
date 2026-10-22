@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# Only the settings that differ from containerd's defaults.
+# The full effective config: containerd config dump
+version = 3
+
+# Same pause image as kubeadm, so kubelet and containerd agree on the sandbox image.
+[plugins.'io.containerd.cri.v1.images'.pinned_images]
+  sandbox = '{{ pause_image }}'
+
+# kubelet uses the systemd cgroup driver. containerd must use the same one.
+[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
+  SystemdCgroup = true

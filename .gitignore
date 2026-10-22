@@ -3,3 +3,6 @@
 *.pem
 *.key
 *_ed25519
+
+# ansible-lint cache
+.ansible/

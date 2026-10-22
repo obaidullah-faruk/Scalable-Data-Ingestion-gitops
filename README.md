@@ -24,10 +24,10 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
 ## Prerequisites
 
 - macOS on Apple Silicon
-- Multipass, Ansible, kubectl and Helm:
+- Multipass, Ansible, ansible-lint, kubectl and Helm:
   ```bash
   brew install --cask multipass
-  brew install ansible kubectl helm
+  brew install ansible ansible-lint kubectl helm
   ```
 
 ## Setup
@@ -64,6 +64,23 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
    cd infra/ansible
    ansible all -m ping --become
    ```
+
+6. Prepare the nodes for kubeadm: OS settings, containerd, and kubelet, kubeadm and kubectl at the version pinned in `inventory/group_vars/all.yml`:
+   ```bash
+   ansible-playbook site.yml
+   ```
+   Run it on all nodes, without `--limit`: every node's `/etc/hosts` is built from the facts of all nodes. A rerun changes nothing.
+
+## Operations
+
+Run from `infra/ansible/`.
+
+| Task | Command |
+|---|---|
+| Upgrade OS packages, one node at a time, rebooting when needed | `ansible-playbook upgrade-os.yml` |
+| Lint the playbooks | `ansible-lint` |
+
+Kubernetes packages are held, so OS upgrades skip them. The collections the playbooks use are listed in `requirements.yml`.
 
 `infra/vms/destroy-vms.sh` deletes the VMs and all their data.
 

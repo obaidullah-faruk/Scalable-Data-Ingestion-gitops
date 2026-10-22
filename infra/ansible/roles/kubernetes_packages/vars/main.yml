@@ -1,0 +1,2 @@
+# pkgs.k8s.io has one repository per minor version, e.g. v1.36.
+kubernetes_packages_repo: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version | regex_replace('\\.\\d+$', '') }}/deb/"

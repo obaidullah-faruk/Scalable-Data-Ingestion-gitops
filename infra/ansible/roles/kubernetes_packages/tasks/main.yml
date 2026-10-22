@@ -1,0 +1,39 @@
+- name: Add the Kubernetes package repository
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: "{{ kubernetes_packages_repo }}"
+    suites: /
+    signed_by: "{{ kubernetes_packages_repo }}Release.key"
+  register: kubernetes_packages_repo_result
+
+- name: Install kubelet, kubeadm and kubectl
+  ansible.builtin.apt:
+    name:
+      - kubelet={{ kubernetes_version }}-*
+      - kubeadm={{ kubernetes_version }}-*
+      - kubectl={{ kubernetes_version }}-*
+    update_cache: "{{ kubernetes_packages_repo_result.changed }}"
+
+# crictl, for looking at containers on a node. kubeadm no longer depends on it.
+- name: Install cri-tools
+  ansible.builtin.apt:
+    name: cri-tools
+
+- name: Point crictl at containerd
+  ansible.builtin.copy:
+    content: "runtime-endpoint: unix:///run/containerd/containerd.sock\n"
+    dest: /etc/crictl.yaml
+    owner: root
+    group: root
+    mode: "0644"
+
+# Kubernetes is upgraded on purpose, one minor version at a time, never by apt upgrade.
+- name: Hold Kubernetes packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl

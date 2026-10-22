@@ -4,3 +4,5 @@
   roles:
     - base
     - kernel
+    - containerd
+    - kubernetes_packages
