@@ -50,6 +50,7 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
    <worker-1 IP>  worker-1
    <worker-2 IP>  worker-2
    ```
+   IPs stay the same across restarts. Recreated VMs get new IPs and new SSH host keys: update `/etc/hosts` and remove the old keys with `ssh-keygen -R <name>`.
 
 4. Add the nodes to your SSH config, for example in `~/.ssh/config.d/homelab` with `Include ~/.ssh/config.d/*` as the first line of `~/.ssh/config`:
    ```
@@ -59,17 +60,24 @@ Ubuntu 24.04 arm64 VMs on Multipass. Sizes are set in `infra/vms/create-vms.sh`.
      IdentitiesOnly yes
    ```
 
-5. Check that Ansible reaches every node. Run Ansible from `infra/ansible/`, where it picks up `ansible.cfg` and the inventory:
+5. Install the Ansible collections and check that Ansible reaches every node. Run Ansible from `infra/ansible/`, where it picks up `ansible.cfg` and the inventory:
    ```bash
    cd infra/ansible
+   ansible-galaxy collection install -r requirements.yml
    ansible all -m ping --become
    ```
 
-6. Prepare the nodes for kubeadm: OS settings, containerd, and kubelet, kubeadm and kubectl at the version pinned in `inventory/group_vars/all.yml`:
+6. Build the cluster:
    ```bash
    ansible-playbook site.yml
    ```
-   Run it on all nodes, without `--limit`: every node's `/etc/hosts` is built from the facts of all nodes. A rerun changes nothing.
+   The playbook:
+   - prepares every node: OS settings, containerd, and kubelet, kubeadm and kubectl at the version pinned in `inventory/group_vars/all.yml`
+   - runs `kubeadm init` on cp-1, installs Calico and joins the workers with their labels and taints from `inventory/hosts.yml`
+   - approves each kubelet's serving certificate
+   - copies the admin kubeconfig to `~/.kube/homelab-admin.conf` on this machine
+
+   `kubeadm init` and `join` run only on nodes that aren't part of the cluster yet. Run the playbook on all nodes, without `--limit`: every node's `/etc/hosts` is built from the facts of all nodes. A rerun changes nothing.
 
 ## Operations
 
@@ -86,8 +94,37 @@ Kubernetes packages are held, so OS upgrades skip them. The collections the play
 
 ## Access
 
+### SSH
+
 ```bash
 ssh cp-1
 ```
 
 Nodes accept SSH as `ops` with the lab key only. Password login is disabled. `ops` has passwordless sudo.
+
+### kubectl
+
+The playbook writes the admin kubeconfig to `~/.kube/homelab-admin.conf`, separate from `~/.kube/config`. kubectl reads it only when `KUBECONFIG` points at it.
+
+For one shell:
+
+```bash
+export KUBECONFIG=~/.kube/homelab-admin.conf
+kubectl get nodes
+```
+
+To keep it next to other clusters, add this to `~/.zshrc`:
+
+```bash
+export KUBECONFIG=~/.kube/config:~/.kube/homelab-admin.conf
+```
+
+Then switch to the cluster's context:
+
+```bash
+kubectl config use-context kubernetes-admin@kubernetes
+```
+
+kubectl merges the files in memory and saves the current context in the first file, `~/.kube/config`. Don't rename the context: the next playbook run copies `admin.conf` again and undoes it.
+
+`homelab-admin.conf` is full cluster admin. Keep it out of Git.
