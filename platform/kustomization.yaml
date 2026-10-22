@@ -6,3 +6,4 @@ resources:
   - metallb/application.yaml
   - envoy-gateway-crds/application.yaml
   - envoy-gateway/application.yaml
+  - argocd/application.yaml

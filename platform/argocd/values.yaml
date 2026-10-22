@@ -7,6 +7,11 @@ dex:
 notifications:
   enabled: false
 
+configs:
+  params:
+    # The UI is reached through the Gateway, which serves plain HTTP, so the server must not redirect to HTTPS.
+    server.insecure: true
+
 controller:
   resources:
     requests:

@@ -87,6 +87,7 @@ Run from `infra/ansible/`.
 | Task | Command |
 |---|---|
 | Upgrade OS packages, one node at a time, rebooting when needed | `ansible-playbook upgrade-os.yml` |
+| Apply a change to `platform/argocd/values.yaml` | `ansible-playbook site.yml` |
 | Lint the playbooks | `ansible-lint` |
 
 Kubernetes packages are held, so OS upgrades skip them. The collections the playbooks use are listed in `requirements.yml`.
@@ -125,3 +126,13 @@ Then switch to the cluster's context:
 ```bash
 kubectl config use-context kubernetes-admin@kubernetes
 ```
+
+### ArgoCD UI
+
+The UI is served at `http://argocd.lab` through the cluster Gateway, whose address is set in `platform/envoy-gateway/config/gateway.yaml`. Add the name to `/etc/hosts`:
+
+```
+192.168.252.240  argocd.lab
+```
+
+Log in as `admin`.

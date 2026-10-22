@@ -1,0 +1,25 @@
+# The route to the ArgoCD UI. ArgoCD itself is installed by Ansible with values.yaml.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-route
+  namespace: argocd
+  # Deleting the Application also deletes what it installed.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    targetRevision: main
+    path: platform/argocd/route
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    # The HTTPRoute CRD comes from the envoy-gateway-crds Application, which may sync after this one.
+    retry:
+      limit: 5
