@@ -1,0 +1,25 @@
+# Values for the local-path-provisioner chart. The chart version is pinned in application.yaml.
+
+storageClass:
+  defaultClass: true
+
+# The helper pod creates and deletes volume directories on the node. The chart default tag is latest.
+helperImage:
+  tag: "1.38.0"
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+helperPod:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi

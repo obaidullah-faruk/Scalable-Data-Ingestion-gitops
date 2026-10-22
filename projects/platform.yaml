@@ -7,6 +7,7 @@ spec:
   description: Cluster add-ons
   sourceRepos:
     - https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    - https://github.com/rancher/local-path-provisioner.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: "*"
