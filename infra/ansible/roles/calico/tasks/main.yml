@@ -1,0 +1,44 @@
+# The operator chart needs the CRDs before it installs. After that the operator owns them and
+# updates them itself on upgrades (manageCRDs), so they are applied only once.
+- name: Check for Calico CRDs
+  ansible.builtin.command: >-
+    kubectl get crd installations.operator.tigera.io
+    --ignore-not-found --output name --kubeconfig /etc/kubernetes/admin.conf
+  register: calico_crds_found
+  changed_when: false
+
+# The CRDs are too big for a Helm release (1 MiB Secret limit), so they are applied with kubectl,
+# as Calico's docs do. Kubernetes 1.36 and later serve MutatingAdmissionPolicy at v1.
+- name: Install Calico CRDs
+  when: calico_crds_found.stdout == ""
+  block:
+    - name: Render Calico CRDs
+      ansible.builtin.command: >-
+        helm template calico-crds projectcalico.org.v3
+        --repo {{ calico_chart_repo }}
+        --version {{ calico_version }}
+        --api-versions admissionregistration.k8s.io/v1/MutatingAdmissionPolicy
+      register: calico_crds
+      changed_when: false
+
+    - name: Apply Calico CRDs
+      ansible.builtin.command: kubectl apply --server-side --kubeconfig /etc/kubernetes/admin.conf -f -
+      args:
+        stdin: "{{ calico_crds.stdout }}"
+      changed_when: true
+
+- name: Install the Tigera operator and Calico
+  kubernetes.core.helm:
+    name: calico
+    chart_ref: tigera-operator
+    chart_repo_url: "{{ calico_chart_repo }}"
+    chart_version: "{{ calico_version }}"
+    release_namespace: tigera-operator
+    kubeconfig: /etc/kubernetes/admin.conf
+    release_values:
+      installation:
+        calicoNetwork:
+          ipPools:
+            - cidr: "{{ pod_subnet }}"
+              # Plain routing between nodes on the same subnet, VXLAN only across subnets.
+              encapsulation: VXLANCrossSubnet

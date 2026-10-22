@@ -12,3 +12,5 @@
   become: true
   roles:
     - kubeadm_init
+    - helm
+    - calico

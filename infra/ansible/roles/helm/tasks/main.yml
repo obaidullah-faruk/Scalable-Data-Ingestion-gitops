@@ -1,0 +1,19 @@
+- name: Add the Helm package repository
+  ansible.builtin.deb822_repository:
+    name: helm
+    types: deb
+    uris: https://packages.buildkite.com/helm-linux/helm-debian/any/
+    suites: any
+    components: main
+    signed_by: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
+  register: helm_repo_result
+
+- name: Install Helm
+  ansible.builtin.apt:
+    name: helm={{ helm_version }}-*
+    update_cache: "{{ helm_repo_result.changed }}"
+
+- name: Hold Helm
+  ansible.builtin.dpkg_selections:
+    name: helm
+    selection: hold

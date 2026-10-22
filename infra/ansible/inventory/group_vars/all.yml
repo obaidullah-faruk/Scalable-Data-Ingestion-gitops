@@ -3,6 +3,11 @@ ansible_python_interpreter: /usr/bin/python3
 
 kubernetes_version: "1.36.5"
 
+# Tested by Calico against Kubernetes 1.35 to 1.37.
+calico_version: v3.33.0
+
+helm_version: "4.3.0"
+
 # Pause image that kubeadm expects for kubernetes_version: kubeadm config images list
 pause_image: registry.k8s.io/pause:3.10.2
 

@@ -6,3 +6,9 @@
     group: root
     mode: "0644"
     validate: kubeadm config validate --config %s
+
+# Runs once. Config changes after init go through kubeadm upgrade, not a second init.
+- name: Initialize the cluster
+  ansible.builtin.command: kubeadm init --config /etc/kubernetes/kubeadm-config.yaml
+  args:
+    creates: /etc/kubernetes/admin.conf
