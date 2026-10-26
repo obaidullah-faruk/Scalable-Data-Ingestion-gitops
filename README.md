@@ -6,6 +6,10 @@ Desired state for the Kubernetes cluster that runs [Scalable-Data-Ingestion](htt
 
 | Path | Contents |
 |---|---|
+| `bootstrap/` | The root Application and the list of everything it syncs |
+| `projects/` | ArgoCD AppProjects |
+| `platform/` | Cluster add-ons, namespaces and shared services, one folder each |
+| `apps/` | The app: a Kustomize base and one overlay per environment |
 | `infra/vms/` | Scripts and cloud-init that create the cluster VMs |
 | `infra/ansible/` | Inventory and playbooks that configure the nodes |
 
@@ -136,3 +140,40 @@ The UI is served at `http://argocd.lab` through the cluster Gateway, whose addre
 ```
 
 Log in as `admin`.
+
+### The app
+
+The dev environment is served at `http://dev.ingest.lab`, and browsers upload files to S3 at `http://s3.ingest.lab`. Add both names to `/etc/hosts`:
+
+```
+192.168.252.240  dev.ingest.lab s3.ingest.lab
+```
+
+## Secrets
+
+Secrets are stored in Git as SealedSecrets. Only the Sealed Secrets controller in the cluster can decrypt them, and each one only in the namespace it was sealed for.
+
+To seal a secret, pipe it from kubectl to `kubeseal` so the plain value is never written to disk:
+
+```bash
+kubectl create secret generic <name> -n <namespace> \
+  --from-literal=<key>=<value> --dry-run=client -o yaml \
+  | kubeseal --controller-namespace sealed-secrets --format yaml \
+  > apps/ingestion/overlays/<env>/secrets/<name>.yaml
+```
+
+### Controller key backup
+
+A new cluster can only decrypt the secrets in this repo with the controller's private keys. The controller adds a new key every 30 days and keeps the old ones. Back them up after each new key, and store the file outside Git:
+
+```bash
+kubectl get secret -n sealed-secrets -l sealedsecrets.bitnami.com/sealed-secrets-key -o yaml \
+  > sealed-secrets-keys.yaml
+```
+
+To restore, apply the file before the controller starts, or apply it and then restart the controller:
+
+```bash
+kubectl apply -f sealed-secrets-keys.yaml
+kubectl -n sealed-secrets rollout restart deployment sealed-secrets-controller
+```
