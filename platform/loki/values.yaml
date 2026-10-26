@@ -21,6 +21,8 @@ loki:
           period: 24h
   limits_config:
     retention_period: 7d
+    # Loki would add a service_name label. Fluent Bit already sets the labels we query by.
+    discover_service_name: []
   compactor:
     retention_enabled: true
     delete_request_store: filesystem
