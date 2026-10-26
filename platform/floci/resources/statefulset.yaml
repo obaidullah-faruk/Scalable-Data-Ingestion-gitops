@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: floci
+  namespace: object-storage
+  labels:
+    app.kubernetes.io/name: floci
+spec:
+  serviceName: floci
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: floci
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: floci
+    spec:
+      # worker-1 holds every PVC.
+      nodeSelector:
+        data: "true"
+      tolerations:
+        - key: dedicated
+          value: data
+          effect: NoSchedule
+      securityContext:
+        # The image's floci user. Started as this user, the entrypoint skips its root-only setup.
+        runAsUser: 1001
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: floci
+          image: floci/floci:2.3.0
+          env:
+            # The default, memory, loses every object when the pod stops.
+            - name: FLOCI_STORAGE_MODE
+              value: persistent
+            - name: FLOCI_STORAGE_PERSISTENT_PATH
+              value: /app/data
+          ports:
+            - name: http
+              containerPort: 4566
+          startupProbe:
+            httpGet:
+              path: /_floci/init
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /_floci/init
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_floci/init
+              port: http
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi

@@ -9,3 +9,4 @@ resources:
   - argocd/application.yaml
   - namespaces/application.yaml
   - sealed-secrets/application.yaml
+  - floci/application.yaml
