@@ -98,6 +98,21 @@ Kubernetes packages are held, so OS upgrades skip them. The collections the play
 
 `infra/vms/destroy-vms.sh` deletes the VMs and all their data.
 
+### Resize a node
+
+Multipass changes CPUs and memory only on a stopped VM. Do one node at a time, and update `infra/vms/create-vms.sh` to match:
+
+```bash
+kubectl drain <node> --ignore-daemonsets --delete-emptydir-data   # workers only
+multipass stop <node>
+multipass set local.<node>.memory=5G
+multipass set local.<node>.cpus=3
+multipass start <node>
+kubectl uncordon <node>
+```
+
+Pods on worker-1 can't move to another node, so the data services are down until it's back. The IP stays the same.
+
 ## Access
 
 ### SSH

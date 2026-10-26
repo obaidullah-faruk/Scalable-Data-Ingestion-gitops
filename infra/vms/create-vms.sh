@@ -7,9 +7,9 @@ SSH_PUBLIC_KEY_FILE="${SSH_PUBLIC_KEY_FILE:-$HOME/.ssh/homelab_ed25519.pub}"
 
 # name cpus memory disk
 NODES="
-cp-1     2 2.5G 15G
-worker-1 2 4G   25G
-worker-2 2 4G   20G
+cp-1     2 3G 15G
+worker-1 3 5G 25G
+worker-2 3 5G 20G
 "
 
 cd "$(dirname "$0")"
