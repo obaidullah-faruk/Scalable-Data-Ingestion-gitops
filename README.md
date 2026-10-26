@@ -134,11 +134,11 @@ infra/access/issue-user-cert.sh <user> <group> [days]   # default 30 days
 
 The script writes `~/.kube/<user>.conf`. The private key stays on the machine that ran it. Rerun the script before the certificate expires.
 
-| Group | Cluster | ingestion-dev | object-storage |
-|---|---|---|---|
-| `platform-admins` | `cluster-admin` | all | all |
-| `ingestion-devs` | view nodes | `edit` | `view` |
-| `viewers` | view nodes | `view` | `view` |
+| Group | Cluster | ingestion-dev | ingestion-prod | object-storage |
+|---|---|---|---|---|
+| `platform-admins` | `cluster-admin` | all | all | all |
+| `ingestion-devs` | view nodes | `edit` | `view` | `view` |
+| `viewers` | view nodes | `view` | `view` | `view` |
 
 The bindings are in `platform/access/`. Built-in `view` can't read Secrets; `edit` can.
 
@@ -158,10 +158,10 @@ Log in as `admin`.
 
 ### The app
 
-The dev environment is served at `http://dev.ingest.lab`, and browsers upload files to S3 at `http://s3.ingest.lab`. Add both names to `/etc/hosts`:
+Prod is served at `http://ingest.lab` and dev at `http://dev.ingest.lab`. Browsers upload files to S3 at `http://s3.ingest.lab`. Add the names to `/etc/hosts`:
 
 ```
-192.168.252.240  dev.ingest.lab s3.ingest.lab
+192.168.252.240  dev.ingest.lab s3.ingest.lab ingest.lab
 ```
 
 ## Secrets

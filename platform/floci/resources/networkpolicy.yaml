@@ -24,6 +24,7 @@ spec:
                 operator: In
                 values:
                   - ingestion-dev
+                  - ingestion-prod
           podSelector:
             matchExpressions:
               - key: app.kubernetes.io/name
