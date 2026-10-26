@@ -7,3 +7,4 @@ resources:
   - envoy-gateway-crds/application.yaml
   - envoy-gateway/application.yaml
   - argocd/application.yaml
+  - namespaces/application.yaml

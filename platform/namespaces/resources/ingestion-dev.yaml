@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingestion-dev
+  labels:
+    # Phase 9 moves enforce to restricted. Until then, kubectl warns on pods that break it.
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute
+  namespace: ingestion-dev
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "8"
+    limits.memory: 8Gi
+    pods: "20"
+    persistentvolumeclaims: "4"
+    requests.storage: 20Gi
+---
+# Requests and limits for containers that don't set their own.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: defaults
+  namespace: ingestion-dev
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        cpu: 50m
+        memory: 64Mi
+      default:
+        cpu: 500m
+        memory: 256Mi

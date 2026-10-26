@@ -1,0 +1,19 @@
+# Namespaces for apps and shared services, with their quotas, default limits and Pod Security levels.
+# No resources finalizer: deleting this Application must not delete the namespaces and their data.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespaces
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    targetRevision: main
+    path: platform/namespaces/resources
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
