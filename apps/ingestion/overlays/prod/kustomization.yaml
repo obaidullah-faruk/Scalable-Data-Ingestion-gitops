@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingestion-prod
+resources:
+  - ../../base
+  - pdb.yaml
+  # Sealed for ingestion-prod. They don't decrypt in any other namespace.
+  - secrets/postgres.yaml
+  - secrets/rabbitmq.yaml
+  - secrets/s3-credentials.yaml
+configMapGenerator:
+  - name: backend-config
+    behavior: merge
+    literals:
+      - S3_UPLOAD_BUCKET=ingestion-prod-uploads
+      - REACT_ORIGIN=http://ingest.lab
+replicas:
+  - name: api
+    count: 2
+  - name: frontend
+    count: 2
+patches:
+  - target:
+      kind: HTTPRoute
+      name: ingestion
+    patch: |-
+      - op: add
+        path: /spec/hostnames
+        value:
+          - ingest.lab
+# Set by a pull request from the release workflow. The digest is what runs; the tag is the commit.
+images:
+  - name: docker.io/faruk75/ingestion-backend
+    newTag: 9bf25914d492207cd293fad4338d885ca1128031
+    digest: sha256:bd438403b98304f3f841429d0e14dfd677d349eded9fb5f1bba091dacc2423fe
+  - name: docker.io/faruk75/ingestion-frontend
+    newTag: 9bf25914d492207cd293fad4338d885ca1128031
+    digest: sha256:8fde7e2d0c25cce62be3a8791589d770bb6ef45b021a2ab0e7abd05469fb8a66

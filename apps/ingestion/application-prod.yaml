@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingestion-prod
+  namespace: argocd
+  # Deleting the Application also deletes what it installed. PVCs are not in Git, so they stay.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ingestion
+  source:
+    repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    targetRevision: main
+    path: apps/ingestion/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingestion-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
