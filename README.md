@@ -125,26 +125,26 @@ Nodes accept SSH as `ops` with the lab key only. Password login is disabled. `op
 
 ### kubectl
 
-The playbook writes the admin kubeconfig to `~/.kube/homelab-admin.conf`, separate from `~/.kube/config`. kubectl reads it only when `KUBECONFIG` points at it.
-
-For one shell:
+People use their own client certificate, issued through the Kubernetes CSR API. The certificate's CN is the user name and its O is the group:
 
 ```bash
 export KUBECONFIG=~/.kube/homelab-admin.conf
-kubectl get nodes
+infra/access/issue-user-cert.sh <user> <group> [days]   # default 30 days
 ```
 
-To keep it next to other clusters, add this to `~/.zshrc`:
+The script writes `~/.kube/<user>.conf`. The private key stays on the machine that ran it. Rerun the script before the certificate expires.
 
-```bash
-export KUBECONFIG=~/.kube/config:~/.kube/homelab-admin.conf
-```
+| Group | Cluster | ingestion-dev | object-storage |
+|---|---|---|---|
+| `platform-admins` | `cluster-admin` | all | all |
+| `ingestion-devs` | view nodes | `edit` | `view` |
+| `viewers` | view nodes | `view` | `view` |
 
-Then switch to the cluster's context:
+The bindings are in `platform/access/`. Built-in `view` can't read Secrets; `edit` can.
 
-```bash
-kubectl config use-context kubernetes-admin@kubernetes
-```
+A certificate can't be revoked before it expires. To cut someone off early, remove their group's binding, or issue certificates with a short expiry.
+
+The playbook's admin kubeconfig, `~/.kube/homelab-admin.conf`, is for emergencies, for example when RBAC is broken. Its user is in `kubeadm:cluster-admins`.
 
 ### ArgoCD UI
 
