@@ -1,0 +1,21 @@
+# Who can do what. People are in groups through the O field of their client certificate.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: access
+  namespace: argocd
+  # Deleting the Application also deletes what it installed.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+    targetRevision: main
+    path: platform/access/resources
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

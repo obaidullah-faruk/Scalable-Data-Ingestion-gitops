@@ -10,3 +10,4 @@ resources:
   - namespaces/application.yaml
   - sealed-secrets/application.yaml
   - floci/application.yaml
+  - access/application.yaml
