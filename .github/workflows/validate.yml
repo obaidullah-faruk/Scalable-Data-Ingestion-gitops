@@ -1,0 +1,39 @@
+name: Validate
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # Renders what ArgoCD syncs from this repo and checks it against the Kubernetes 1.36 API
+  # and the CRD schemas. Helm charts are rendered by ArgoCD and are not checked here.
+  manifests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Render
+        run: |
+          mkdir rendered
+          for dir in bootstrap apps/ingestion/overlays/*; do
+            kustomize build "$dir" > "rendered/${dir//\//-}.yaml"
+          done
+          # Plain manifest folders, synced by an Application without Kustomize.
+          for dir in platform/*/*/; do
+            dir="${dir%/}"
+            for file in "$dir"/*.yaml; do
+              echo "---"
+              cat "$file"
+            done > "rendered/${dir//\//-}.yaml"
+          done
+      - name: Validate
+        run: >-
+          docker run --rm --volume "$PWD/rendered:/rendered"
+          ghcr.io/yannh/kubeconform:v0.8.0@sha256:faffaf43f95aa6425306e1ab8d6fcad72acb9049158f38e574c085ea1ec0f64e
+          -kubernetes-version 1.36.0 -strict -summary
+          -schema-location default
+          -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+          /rendered
