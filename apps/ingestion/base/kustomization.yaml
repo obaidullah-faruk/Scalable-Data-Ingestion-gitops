@@ -15,6 +15,8 @@ resources:
   - api/deployment.yaml
   - api/service.yaml
   - worker/deployment.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
 # Settings shared by every backend process. The hash suffix makes pods restart when they change.
 configMapGenerator:
   - name: backend-config
