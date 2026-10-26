@@ -6,3 +6,15 @@ resources:
   # Sealed for ingestion-dev. They don't decrypt in any other namespace.
   - secrets/postgres.yaml
   - secrets/rabbitmq.yaml
+  - secrets/s3-credentials.yaml
+configMapGenerator:
+  - name: backend-config
+    behavior: merge
+    literals:
+      - S3_UPLOAD_BUCKET=ingestion-dev-uploads
+      - REACT_ORIGIN=http://dev.ingest.lab
+images:
+  - name: docker.io/faruk75/ingestion-backend
+    newTag: 9bf25914d492207cd293fad4338d885ca1128031
+  - name: docker.io/faruk75/ingestion-frontend
+    newTag: 9bf25914d492207cd293fad4338d885ca1128031

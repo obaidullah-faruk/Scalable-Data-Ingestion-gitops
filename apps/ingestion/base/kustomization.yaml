@@ -10,3 +10,14 @@ resources:
   - rabbitmq/service.yaml
   - redis/deployment.yaml
   - redis/service.yaml
+# Settings shared by every backend process. The hash suffix makes pods restart when they change.
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - LOG_LEVEL=INFO
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=ingestion
+      - REDIS_URL=redis://redis:6379/0
+      - S3_ENDPOINT_URL=http://floci.object-storage.svc.cluster.local:4566
+      - S3_BROWSER_ENDPOINT_URL=http://s3.ingest.lab
+      - AWS_DEFAULT_REGION=us-east-1
