@@ -3,3 +3,14 @@ kind: Kustomization
 resources:
   - grafana-admin.yaml
   - httproute.yaml
+  - alerts-ingestion.yaml
+# Grafana's sidecar loads every ConfigMap with the grafana_dashboard label.
+configMapGenerator:
+  - name: dashboard-ingestion
+    namespace: monitoring
+    files:
+      - dashboards/ingestion.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"

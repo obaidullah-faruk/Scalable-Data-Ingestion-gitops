@@ -1,0 +1,36 @@
+# Alerts for the app in every ingestion-* namespace. Each alert names its namespace.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ingestion
+  namespace: monitoring
+spec:
+  groups:
+    - name: ingestion
+      rules:
+        - alert: IngestionApiErrors
+          expr: |
+            sum by (namespace) (rate(http_requests_total{namespace=~"ingestion-.*", status="5xx"}[5m]))
+              / sum by (namespace) (rate(http_requests_total{namespace=~"ingestion-.*"}[5m]))
+              > 0.05
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: More than 5% of api requests in {{ $labels.namespace }} fail.
+        - alert: IngestionQueueGrowing
+          expr: |
+            rabbitmq_detailed_queue_messages_ready{namespace=~"ingestion-.*", queue="celery"} > 20
+              and deriv(rabbitmq_detailed_queue_messages_ready{namespace=~"ingestion-.*", queue="celery"}[10m]) > 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $value }} tasks are waiting in {{ $labels.namespace }} and the queue keeps growing."
+        - alert: IngestionWorkersDown
+          expr: rabbitmq_detailed_queue_consumers{namespace=~"ingestion-.*", queue="celery"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: No worker takes tasks in {{ $labels.namespace }}. Uploads wait until one does.
