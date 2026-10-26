@@ -12,3 +12,4 @@ resources:
   - floci/application.yaml
   - access/application.yaml
   - kube-prometheus-stack/application.yaml
+  - loki/application.yaml
