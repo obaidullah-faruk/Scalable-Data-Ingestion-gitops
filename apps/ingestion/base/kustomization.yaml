@@ -10,6 +10,8 @@ resources:
   - rabbitmq/service.yaml
   - redis/deployment.yaml
   - redis/service.yaml
+  - jobs/s3-init.yaml
+  - jobs/migrate.yaml
 # Settings shared by every backend process. The hash suffix makes pods restart when they change.
 configMapGenerator:
   - name: backend-config
