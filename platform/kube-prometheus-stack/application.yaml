@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  # Deleting the Application also deletes what it installed. The Prometheus PVC is not in Git, so it stays.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 92.13.1
+      helm:
+        valueFiles:
+          - $values/platform/kube-prometheus-stack/values.yaml
+    # Values for the chart, and the Grafana route, secrets, dashboards and alert rules in config/.
+    - repoURL: https://github.com/obaidullah-faruk/Scalable-Data-Ingestion-gitops.git
+      targetRevision: main
+      ref: values
+      path: platform/kube-prometheus-stack/config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # The CRDs are too large for the last-applied annotation of a client-side apply.
+      - ServerSideApply=true

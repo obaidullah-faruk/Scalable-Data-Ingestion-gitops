@@ -1,0 +1,130 @@
+# Values for the kube-prometheus-stack chart. The chart version is pinned in application.yaml.
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    # Prometheus deletes the oldest data first when the volume gets this full.
+    retentionSize: 8GB
+    # Pick up ServiceMonitors, PodMonitors and rules from every namespace, not only the ones
+    # labelled with this Helm release.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: false
+    # worker-1 holds every PVC.
+    nodeSelector:
+      data: "true"
+    tolerations:
+      - key: dedicated
+        value: data
+        effect: NoSchedule
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 1536Mi
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      app: "true"
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+grafana:
+  # Dashboards and data sources come from Git, so Grafana keeps no state worth a volume.
+  admin:
+    existingSecret: grafana-admin
+  nodeSelector:
+    app: "true"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 384Mi
+  sidecar:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.loki.svc.cluster.local:3100
+  testFramework:
+    enabled: false
+
+kube-state-metrics:
+  nodeSelector:
+    app: "true"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+prometheus-node-exporter:
+  # Runs on every node, whatever its taints.
+  tolerations:
+    - operator: Exists
+  resources:
+    requests:
+      cpu: 10m
+      memory: 24Mi
+    limits:
+      cpu: 200m
+      memory: 64Mi
+
+prometheusOperator:
+  nodeSelector:
+    app: "true"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        app: "true"
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi

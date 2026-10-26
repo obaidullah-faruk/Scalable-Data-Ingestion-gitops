@@ -11,3 +11,4 @@ resources:
   - sealed-secrets/application.yaml
   - floci/application.yaml
   - access/application.yaml
+  - kube-prometheus-stack/application.yaml
