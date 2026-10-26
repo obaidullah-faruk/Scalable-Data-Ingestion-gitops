@@ -13,3 +13,4 @@ resources:
   - access/application.yaml
   - kube-prometheus-stack/application.yaml
   - loki/application.yaml
+  - fluent-bit/application.yaml

@@ -1,0 +1,49 @@
+# Values for the fluent-bit chart. The chart version is pinned in application.yaml.
+
+# Collects container logs on every node, whatever its taints.
+tolerations:
+  - operator: Exists
+
+resources:
+  requests:
+    cpu: 20m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+testFramework:
+  enabled: false
+
+config:
+  inputs: |
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        multiline.parser cri
+        Tag kube.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+
+  # Adds the pod's namespace, name and labels. Merge_Log parses JSON log lines, so their
+  # fields, such as level and run_id, become fields of the record.
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        Merge_Log On
+        Keep_Log Off
+        Annotations Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
+
+  # Only low-cardinality fields become Loki labels. Everything else, run_id included,
+  # stays in the line and is filtered at query time.
+  outputs: |
+    [OUTPUT]
+        Name loki
+        Match kube.*
+        Host loki.loki.svc.cluster.local
+        Port 3100
+        Labels namespace=$kubernetes['namespace_name'], app=$kubernetes['labels']['app.kubernetes.io/name'], level=$level
+        Line_Format json
