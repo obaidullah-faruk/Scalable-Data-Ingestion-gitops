@@ -8,3 +8,4 @@ resources:
   - envoy-gateway/application.yaml
   - argocd/application.yaml
   - namespaces/application.yaml
+  - sealed-secrets/application.yaml

@@ -1,0 +1,12 @@
+# Values for the sealed-secrets chart. The chart version is pinned in application.yaml.
+
+# The name kubeseal looks for by default, so only --controller-namespace is needed.
+fullnameOverride: sealed-secrets-controller
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
