@@ -18,6 +18,7 @@ resources:
   - frontend/deployment.yaml
   - frontend/service.yaml
   - reconcile/cronjob.yaml
+  - routes/httproute.yaml
 # Settings shared by every backend process. The hash suffix makes pods restart when they change.
 configMapGenerator:
   - name: backend-config

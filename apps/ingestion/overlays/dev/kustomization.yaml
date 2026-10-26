@@ -13,6 +13,15 @@ configMapGenerator:
     literals:
       - S3_UPLOAD_BUCKET=ingestion-dev-uploads
       - REACT_ORIGIN=http://dev.ingest.lab
+patches:
+  - target:
+      kind: HTTPRoute
+      name: ingestion
+    patch: |-
+      - op: add
+        path: /spec/hostnames
+        value:
+          - dev.ingest.lab
 images:
   - name: docker.io/faruk75/ingestion-backend
     newTag: 9bf25914d492207cd293fad4338d885ca1128031
