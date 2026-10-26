@@ -6,18 +6,26 @@ labels:
 resources:
   - postgres/statefulset.yaml
   - postgres/service.yaml
+  - postgres/networkpolicy.yaml
   - rabbitmq/statefulset.yaml
   - rabbitmq/service.yaml
+  - rabbitmq/networkpolicy.yaml
   - redis/deployment.yaml
   - redis/service.yaml
+  - redis/networkpolicy.yaml
   - jobs/s3-init.yaml
   - jobs/migrate.yaml
+  - jobs/networkpolicy.yaml
   - api/deployment.yaml
   - api/service.yaml
+  - api/networkpolicy.yaml
   - worker/deployment.yaml
+  - worker/networkpolicy.yaml
   - frontend/deployment.yaml
   - frontend/service.yaml
+  - frontend/networkpolicy.yaml
   - reconcile/cronjob.yaml
+  - reconcile/networkpolicy.yaml
   - routes/httproute.yaml
 # Settings shared by every backend process. The hash suffix makes pods restart when they change.
 configMapGenerator:

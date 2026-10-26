@@ -1,0 +1,24 @@
+# Reads queued tasks from PostgreSQL and publishes them to RabbitMQ.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: reconcile
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: reconcile
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgres
+      ports:
+        - port: 5432
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq
+      ports:
+        - port: 5672

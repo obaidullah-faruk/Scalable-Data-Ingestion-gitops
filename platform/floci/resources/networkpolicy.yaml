@@ -1,0 +1,36 @@
+# Browsers reach Floci through the Gateway. Inside the cluster, only the app pods that use S3.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floci
+  namespace: object-storage
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: floci
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: envoy
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - ingestion-dev
+          podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - api
+                  - worker
+                  - s3-init
+      ports:
+        - port: 4566
