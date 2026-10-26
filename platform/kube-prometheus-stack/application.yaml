@@ -3,6 +3,9 @@ kind: Application
 metadata:
   name: kube-prometheus-stack
   namespace: argocd
+  annotations:
+    # Server-side apply needs a server-side diff, or fields the API server defaults show as drift.
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
   # Deleting the Application also deletes what it installed. The Prometheus PVC is not in Git, so it stays.
   finalizers:
     - resources-finalizer.argocd.argoproj.io
