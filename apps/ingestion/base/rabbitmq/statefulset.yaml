@@ -54,6 +54,8 @@ spec:
               containerPort: 5672
             - name: management
               containerPort: 15672
+            - name: metrics
+              containerPort: 15692
           # Each check starts a small Erlang VM, so they run less often than the other probes.
           startupProbe:
             exec:

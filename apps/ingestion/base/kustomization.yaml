@@ -10,6 +10,7 @@ resources:
   - rabbitmq/statefulset.yaml
   - rabbitmq/service.yaml
   - rabbitmq/networkpolicy.yaml
+  - rabbitmq/servicemonitor.yaml
   - redis/deployment.yaml
   - redis/service.yaml
   - redis/networkpolicy.yaml
