@@ -25,8 +25,8 @@ patches:
 # Set by the release workflow on every merge to main. The digest is what runs; the tag is the commit.
 images:
   - name: docker.io/faruk75/ingestion-backend
-    newTag: 9bf25914d492207cd293fad4338d885ca1128031
-    digest: sha256:bd438403b98304f3f841429d0e14dfd677d349eded9fb5f1bba091dacc2423fe
+    newTag: 70e714ce965935ad2f03b5934655564ef561911b
+    digest: sha256:3edff8faa89b4429aef3ea261ea21577f1de534e23dd8c2c152285e7415ec4b7
   - name: docker.io/faruk75/ingestion-frontend
-    newTag: 9bf25914d492207cd293fad4338d885ca1128031
-    digest: sha256:8fde7e2d0c25cce62be3a8791589d770bb6ef45b021a2ab0e7abd05469fb8a66
+    newTag: 70e714ce965935ad2f03b5934655564ef561911b
+    digest: sha256:59c2e17a63f6d723500e8c48d50f1f5e77a8e49e9a86e6006269b83ebde2da26
