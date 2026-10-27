@@ -53,13 +53,14 @@ grafana:
     existingSecret: grafana-admin
   nodeSelector:
     app: "true"
+  # Start-up builds the dashboard search index. With less CPU it misses its liveness probe and restarts.
   resources:
     requests:
       cpu: 50m
-      memory: 128Mi
+      memory: 320Mi
     limits:
-      cpu: 500m
-      memory: 384Mi
+      cpu: "1"
+      memory: 512Mi
   sidecar:
     resources:
       requests:
