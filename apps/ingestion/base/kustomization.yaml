@@ -20,6 +20,7 @@ resources:
   - api/deployment.yaml
   - api/service.yaml
   - api/networkpolicy.yaml
+  - api/servicemonitor.yaml
   - worker/deployment.yaml
   - worker/networkpolicy.yaml
   - frontend/deployment.yaml
